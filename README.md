@@ -18,31 +18,34 @@ These activities are performed by someone who have Cloud Admin privileges. In th
 - Create a new Project
 - Ensure [Billing is enabled](https://cloud.google.com/billing/docs/how-to/modify-project?authuser=1) for the project
 - Enable needed APIs and services (link is on the top of project dashboard)
-- **!! NOTE !!** - For this work I reused an existing project with the name `steamwithdataproc`. The name does not directly relate to this work, but ignore that for now.
+    * Compute Engine API
+    * Identity and Access Management (IAM) API
+    * Cloud Resorce Manager API
+- **!! NOTE !!** - For this work I reused an existing project with the name `project48a`. The name does not directly relate to this work, but ignore that for now.
 
 #### Setup gcloud cli
 - Preferably setup the `gcloud` sdk on a linux based machine, ideally used by the Cloud system admin team to manage the cloud infrastructure.
 - Follow steps to [install Google Cloud SDK](https://cloud.google.com/sdk/docs/quickstart)
 - Create a new gcloud profile and authenticate
-	```
-	$ gcloud config configurations create hemen-h2oai
-	Created [hemen-h2oai].
-	Activated [hemen-h2oai].
-	$ gcloud auth login
-	Your browser has been opened to visit:
-	
-	    https://acco ..... deleted .... t_account
-	
-	You are now logged in as [hemen.kapadia@h2o.ai].
-	Your current project is [None].  You can change this setting by running:
-	  $ gcloud config set project PROJECT_ID
-	```
+    ```
+    $ gcloud config configurations create hemen-h2oai
+    Created [hemen-h2oai].
+    Activated [hemen-h2oai].
+    $ gcloud auth login
+    Your browser has been opened to visit:
+    
+        https://acco ..... deleted .... t_account
+    
+    You are now logged in as [hemen.kapadia@h2o.ai].
+    Your current project is [None].  You can change this setting by running:
+      $ gcloud config set project PROJECT_ID
+    ```
 
 - Setup project. You would have already created a project from the GUI as discussed earlier. Ensure it has billing enabled as well as services API enabled.
-	```
-	$ gcloud config set project steamwithdataproc
-	Updated property [core/project].
-	```
+    ```
+    $ gcloud config set project project48a
+    Updated property [core/project].
+    ```
 
 - Setup compute region. You can use `gcloud compute regions list` to get a list of available compute regions
     ```
@@ -64,14 +67,14 @@ These activities are performed by someone who have Cloud Admin privileges. In th
     [core]
     account = hemen.kapadia@h2o.ai
     disable_usage_reporting = True
-    project = steamwithdataproc
+    project = project48a
 
     Your active configuration is: [hemen-h2oai]
     ```
 
 #### Setup Service Account
 - A total of 3 service accounts are needed for this to work end to end. Of the three, one is created manually and has the most privileges. The remaining two will are created by the terraform script
-    - `steamwithdataproc-sa`
+    - `project48a-sa`
         - This one is created manually as shown below using gcloud
         - It is used to setup the VPC, firewalls etc and also the Workspace instance
         - Needs Compute Admin to create instances and Storage Admin to manage state
@@ -85,26 +88,26 @@ These activities are performed by someone who have Cloud Admin privileges. In th
         - Access to google cloud storage and BigQuery
 - Create a [Service Account for this Project](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating)
     ```bash
-    gcloud iam service-accounts create steamwithdataproc-sa \
+    gcloud iam service-accounts create project48a-sa \
         --description="SteamWithDataproc Service Account" \
-        --display-name="steamwithdataproc-sa"
+        --display-name="project48a-sa"
         
     gcloud iam service-accounts list 
     ```
 - Ensure the Service account has necessary priviledges. Here these may be a bit extra but more fin grained access roles could be given
     - [GCP Roles list](https://cloud.google.com/iam/docs/understanding-roles?authuser=1#compute-engine-roles)
     ```
-    gcloud projects add-iam-policy-binding steamwithdataproc --member serviceAccount:steamwithdataproc-sa@steamwithdataproc.iam.gserviceaccount.com --role roles/storage.admin 
-    gcloud projects add-iam-policy-binding steamwithdataproc --member serviceAccount:steamwithdataproc-sa@steamwithdataproc.iam.gserviceaccount.com --role roles/compute.admin
-    gcloud projects add-iam-policy-binding steamwithdataproc --member serviceAccount:steamwithdataproc-sa@steamwithdataproc.iam.gserviceaccount.com --role roles/iam.serviceAccountAdmin
-    gcloud projects add-iam-policy-binding steamwithdataproc --member serviceAccount:steamwithdataproc-sa@steamwithdataproc.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
-    gcloud projects add-iam-policy-binding steamwithdataproc --member serviceAccount:steamwithdataproc-sa@steamwithdataproc.iam.gserviceaccount.com --role roles/iam.securityAdmin
+    gcloud projects add-iam-policy-binding project48a --member serviceAccount:project48a-sa@project48a.iam.gserviceaccount.com --role roles/storage.admin 
+    gcloud projects add-iam-policy-binding project48a --member serviceAccount:project48a-sa@project48a.iam.gserviceaccount.com --role roles/compute.admin
+    gcloud projects add-iam-policy-binding project48a --member serviceAccount:project48a-sa@project48a.iam.gserviceaccount.com --role roles/iam.serviceAccountAdmin
+    gcloud projects add-iam-policy-binding project48a --member serviceAccount:project48a-sa@project48a.iam.gserviceaccount.com --role roles/iam.serviceAccountUser
+    gcloud projects add-iam-policy-binding project48a --member serviceAccount:project48a-sa@project48a.iam.gserviceaccount.com --role roles/iam.securityAdmin
     ```
 
 - Create a [service account key for use with terraform](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys). First create a directory structure as shown in the tree command. `cat` is used to check if the key file got created
     ```bash
     cd gcp/network
-    gcloud iam service-accounts keys create gcpkey.json --iam-account steamwithdataproc-sa@steamwithdataproc.iam.gserviceaccount.com
+    gcloud iam service-accounts keys create gcpkey.json --iam-account project48a-sa@project48a.iam.gserviceaccount.com
     cat gcpkey.json
     ```
 
@@ -116,9 +119,9 @@ These activities are performed by someone who have Cloud Admin privileges. In th
 
 #### Create shared GCS storage for TF backend
 - The TF code currently assumes that GCS bucket to store TF state is already created. We use this approach
-	- Ensure the value of variable `gcp_project_name` in `network/main/variables.tf` is in sync with the project name used in the below command to create the tf state backend bucket
-	- `gsutil mb gs://steamwithdataproc-tfstate` to create the bucket
-	- `gsutil versioning set on gs://steamwithdataproc-tfstate` to eanble versioning support
+    - Ensure the value of variable `gcp_project_name` in `network/main/variables.tf` is in sync with the project name used in the below command to create the tf state backend bucket
+    - `gsutil mb gs://project48a-tfstate` to create the bucket
+    - `gsutil versioning set on gs://project48a-tfstate` to eanble versioning support
 - In web browser, select the project and left top menu dropdown select Storage >> Browser and validate the bucket is created.
 - An alternate option is to have TF create the bucket, but then would need `terraform apply` in multiple folders as in https://github.com/tasdikrahman/terraform-gcp-examples
 
@@ -126,7 +129,7 @@ Next we configure [terrafom to use gcs backend for state mangement](https://www.
 - Add this block to `gcp/main/terraform.tf` file
 ```  
 backend "gcs" {
-    bucket = "steamwithdataproc-tfstate"
+    bucket = "project48a-tfstate"
     prefix = "h2o/terraform"
   }
 ```
@@ -140,21 +143,21 @@ gcp
 ├── h2ocluster                      
 ```
 - `network` directory 
-	- contains all Terraform code that will setup the VPC, Subnets, Firewall, Workspace instance, service accounts etc.
-	- executed only one time
-	- happens on any external machine, possibly a cloud admins laptop
+    - contains all Terraform code that will setup the VPC, Subnets, Firewall, Workspace instance, service accounts etc.
+    - executed only one time
+    - happens on any external machine, possibly a cloud admins laptop
 - `h2ocluster` directory
-	- this directory is zipped and should be moved to `/opt/h2ocluster` in the workspace system 
-	- contains Terraform code that will setup a N node H2O cluster instance in the private subnet when requested by a user.
-	- will be executed multiple times by the user to start/stop the cluster.
-	- will not be executed directly as terraform apply or destroy. Instead a bash wrapper will be provided to list, create and destroy the custer instance
-	- list will use gcloud commands whereas create and destroy will leverage the terraform code in this directory.
+    - this directory is zipped and should be moved to `/opt/h2ocluster` in the workspace system 
+    - contains Terraform code that will setup a N node H2O cluster instance in the private subnet when requested by a user.
+    - will be executed multiple times by the user to start/stop the cluster.
+    - will not be executed directly as terraform apply or destroy. Instead a bash wrapper will be provided to list, create and destroy the custer instance
+    - list will use gcloud commands whereas create and destroy will leverage the terraform code in this directory.
 
 #### Terraform init and apply
 - Navigate to `gcp/network` directory and run `terraform init` to initialize terraform. 
-	- a `terraform.tfstate` will be created in the `network/.terraform` directory with details about the gcs backend and modules
-	- the TF state file without any resources is created in GCP backend with the file named `default.tfstate`.
-	- `gsutil cat gs://steamwithdataproc-tfstate/h2o/terraform/default.tfstate` to view the content of this initial state
+    - a `terraform.tfstate` will be created in the `network/.terraform` directory with details about the gcs backend and modules
+    - the TF state file without any resources is created in GCP backend with the file named `default.tfstate`.
+    - `gsutil cat gs://project48a-tfstate/h2o/terraform/default.tfstate` to view the content of this initial state
 - `terraform apply` can be used to create all the necessary network and workspace resources
 - `terraform show` can be used to see the resources state
 - `terraform refresh` can be used to update state informaton with the chages in real world infra that happened via Google Web console.
@@ -166,14 +169,14 @@ gcp
 - Instances in the public subnet will get an external IP and hence are internet accessible. 
 - Instances without a public address are private and as a convention we put them in the private subnet. 
 - After `terraform apply` when the workspace machine was created it can be accessed with 
-	- `gcloud beta compute ssh --zone "us-west1-a" --project "steamwithdataproc" --ssh-key-file=~/.ssh/google_compute/id_rsa "h2o-instance-workspace"`
+    - `gcloud beta compute ssh --zone "us-west1-a" --project "project48a" --ssh-key-file=~/.ssh/google_compute/id_rsa "h2o-instance-workspace"`
 - Create SSH key - For the very first time we would not have an ssh key to use. 
-	- Assuming that you have completed the `gcloud auth login` step from point 3 above you can run the above command without `--ssh-key-file` option.
-	- This will create the files `google_compute_engine`, `google_compute_engine.pub` and `google_compute_engine.knownhosts` files in `$HOME/.ssh` directory.
-	- Will work only if in Project >> IAM your user id will have `Compute OS Login` or `Compute OS Admin Login` roles to your member.
+    - Assuming that you have completed the `gcloud auth login` step from point 3 above you can run the above command without `--ssh-key-file` option.
+    - This will create the files `google_compute_engine`, `google_compute_engine.pub` and `google_compute_engine.knownhosts` files in `$HOME/.ssh` directory.
+    - Will work only if in Project >> IAM your user id will have `Compute OS Login` or `Compute OS Admin Login` roles to your member.
 - It should be able to access this machine now with the above command
 - Additionally, once done with the above command we can then use normal ssh also. Note the username to use when we connect above. You can get this username to use when you ssh above. 
-	- `ssh -i ~/.ssh/google_compute_engine hemen_kapadia_h2o_ai@35.247.123.203`
+    - `ssh -i ~/.ssh/google_compute_engine hemen_kapadia_h2o_ai@35.247.123.203`
 
 If the Workspace machine is created and you are able to ssh to it, we conclude step 1 of creating the infrastructure setup
 
@@ -199,7 +202,7 @@ Step 2: Creating H2O clusters
     ```
 - Using this info, create an ssh local port forward to the H2O cluster created in the private subnet via the Workspace machine (which is like a bastion). You can select any local port to forward. I used `8888` in this example.
     ```bash
-    ssh -i ~/.ssh/google_compute/id_rsa -L 8888:10.100.1.2:54321  hemen_kapadia_h2o_ai@35.247.123.203
+    ssh -i ~/.ssh/google_compute_engine -L 8888:10.100.1.2:54321  acaraliburak_gmail_com@35.195.53.255
     ```
 - Open a browser on your laptop and go to URL `http://localhost:8888`. You will see the H2O flow UI.
 - If you are running Python or R code to connect to the H2O cluster then the cluster address will be different based on where you code is executing.
@@ -213,7 +216,7 @@ Here we will upload some data into S3 bucket and then import it in to H2O-3 clus
 
 #### Create data file in cloud storage and import it to H2O-3
 - Create a GCS bucket 
-    - `gsutil mb -p steamwithdataproc -c NEARLINE -l US-WEST1 -b on gs://h2ocluster-train-data`
+    - `gsutil mb -p project48a -c NEARLINE -l US-WEST1 -b on gs://h2ocluster-train-data`
 - Upload some data files to the bucket
     - `gsutil cp  ~/Workspace/Office/Datasets/flights_delay/allyears2k.csv gs://h2ocluster-train-data/flights-delay/`
     - `gsutil cp  ~/Workspace/Office/Datasets/flights_delay/airlines_all.05p.csv gs://h2ocluster-train-data/flights-delay/`
@@ -224,17 +227,17 @@ Here we will upload some data into S3 bucket and then import it in to H2O-3 clus
 - In the section that opens click `View Data` to see the imported data in H2O-3
 
 #### Create table in BQ and import it to H2O-3
-- When using `bq` command for the first time it initialized and asked for the default project. My project is named `steamwithdataproc` so I selected the same.
-- To list datasets in this project `bq ls steamwithdataproc:`, the last part defining the project can be removed if default project is set
-- Create airlines dataset `bq --location=us-west1 mk steamwithdataproc:airlines`
+- When using `bq` command for the first time it initialized and asked for the default project. My project is named `project48a` so I selected the same.
+- To list datasets in this project `bq ls project48a:`, the last part defining the project can be removed if default project is set
+- Create airlines dataset `bq --location=us-west1 mk project48a:airlines`
 - Verify it got created `bq ls --format=pretty`
 - Adding a table to the dataset and [loading data in it](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#loading_csv_data_into_a_table)
-    - `bq --location=us-west1 load --autodetect --null_marker="NA" --source_format=CSV steamwithdataproc:airlines.allyears2k ~/Workspace/Office/Datasets/flights_delay/allyears2k.csv`
-    - `bq ls --format=pretty steamwithdataproc:airlines`
-    - `bq show --format=pretty steamwithdataproc:airlines.allyears2k` will describe the table
+    - `bq --location=us-west1 load --autodetect --null_marker="NA" --source_format=CSV project48a:airlines.allyears2k ~/Workspace/Office/Datasets/flights_delay/allyears2k.csv`
+    - `bq ls --format=pretty project48a:airlines`
+    - `bq show --format=pretty project48a:airlines.allyears2k` will describe the table
 - To import this data into H2O-3, create a new notebook and click Data >> Import SQL Table. In the section that opens up enter the below information to read data from the above table.
-    - JDBC URL: `jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=steamwithdataproc;OAuthType=3;Location=us-west1;LogLevel=4;LogPath=/tmp/h2o-bigquery-logs;`
-    - Table: `steamwithdataproc.airlines.allyears2k`
+    - JDBC URL: `jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=project48a;OAuthType=3;Location=us-west1;LogLevel=4;LogPath=/tmp/h2o-bigquery-logs;`
+    - Table: `project48a.airlines.allyears2k`
     - Fetch mode can be Single or Distributed
     - Leave all other fields empty
 - Click the Import Button. It will open a new section. Click View button in this section.
@@ -245,6 +248,10 @@ Here we will upload some data into S3 bucket and then import it in to H2O-3 clus
 Optional Step: Create and use a custom H2O-3 image 
 --------------------------------------------------
 - To speed up the cluster creation times you can use an image with H2O preloaded on it.
+- Create a service account key for h2ocluster-vm-sa on your local machine and move it to the workspace machine under /opt/h2ocluster/packer/scripts
+    ```bash
+    gcloud iam service-accounts keys create h2ocluster-sa-key.json --iam-account h2ocluster-vm-sa@project48a.iam.gserviceaccount.com
+    ```
 - To create such an image, on the Workspace machine follow the instructions below
   - `cd /opt/h2ocluster/packer/`
   - If needed update the variable values in the file `h2o-gcp-image.json`
@@ -279,12 +286,12 @@ Useful for Workspace
 
 Useful for Startup Script completion tracking
 - [Updating instance Metadata](https://cloud.google.com/compute/docs/storing-retrieving-metadata#updatinginstancemetadata)
-	- See the updating on a running instance instead of the 
+    - See the updating on a running instance instead of the 
 - [Waiting for Metadata Change](https://cloud.google.com/compute/docs/storing-retrieving-metadata#waitforchange)
 - Metadata on GCP instances can be accessed using the metadata url.
 - For non GCP instances we can access it as
-	- `gcloud compute instances describe h2o-instance-workspace --format='value[](metadata.items.startup-complete)'`
-	- We use [gcloud topic filters](https://cloud.google.com/sdk/gcloud/reference/topic/filters) to get the desired value out of the response.
+    - `gcloud compute instances describe h2o-instance-workspace --format='value[](metadata.items.startup-complete)'`
+    - We use [gcloud topic filters](https://cloud.google.com/sdk/gcloud/reference/topic/filters) to get the desired value out of the response.
 - [Debugging Startup Scripts](https://cloud.google.com/compute/docs/startupscript#viewing_startup_script_logs)
 
 - [Google Cloud Cheatsheet](https://gist.github.com/pydevops/cffbd3c694d599c6ca18342d3625af97#011-service-account)

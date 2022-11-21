@@ -48,7 +48,7 @@ resource "google_compute_router_nat" "vpc_router_nat" {
 resource "google_compute_subnetwork" "vpc_public_subnet" {
   name = "${google_compute_network.vpc.name}-public-subnet"
   project = var.gcp_project_id
-  description = "Public Subnet to host the instance which will be used as worspace."
+  description = "Public Subnet to host the instance which will be used as workspace."
 
   region = var.vpc_region
   # ip_cidr_range = cidrsubnet(var.vpc_cidr, 8, 100)
@@ -132,6 +132,6 @@ resource "google_compute_firewall" "firewall_private_access" {
   # from the public subnet 
   source_ranges = [google_compute_subnetwork.vpc_public_subnet.ip_cidr_range, 
                    google_compute_subnetwork.vpc_private_subnet.ip_cidr_range]
-  # to instances that have the public tag
+  # to instances that have the private tag
   target_tags = ["private"]
 }

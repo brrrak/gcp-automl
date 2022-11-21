@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"vpc","Source":"./modules/vpc","Dir":"modules/vpc"},{"Key":"workspace-instance","Source":"./modules/workspace","Dir":"modules/workspace"},{"Key":"","Source":"","Dir":"."},{"Key":"service-accounts","Source":"./modules/service-accounts","Dir":"modules/service-accounts"}]}

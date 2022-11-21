@@ -1,9 +1,9 @@
 
 global_prefix = "h2o"
 
-gcp_project_id = "steamwithdataproc"
-gcp_project_region = "us-west1"
-gcp_project_zone = "us-west1-a"
+gcp_project_id = "project48a"
+gcp_project_region = "europe-west1"
+gcp_project_zone = "europe-west1-b"
 
 
 vpc_cidr = "10.100.0.0/16"

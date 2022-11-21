@@ -1,10 +1,10 @@
 {
   "variables": {
-    "h2o_version": "h2o-3-32-0-2",
-    "h2o_url": "http://h2o-release.s3.amazonaws.com/h2o/rel-zermelo/2/h2o-3.32.0.2.zip",
-    "project_id": "steamwithdataproc",
+    "h2o_version": "h2o-3-38-0-2",
+    "h2o_url": "http://h2o-release.s3.amazonaws.com/h2o/rel-zygmund/2/h2o-3.38.0.2.zip",
+    "project_id": "project48a",
     "source_image_family": "rhel-7",
-    "zone": "us-west1-a"
+    "zone": "europe-west1-b"
   },
   "builders": [
     {
@@ -17,7 +17,7 @@
       "ssh_username": "rhel",
       "disk_size": 20,
       "machine_type": "e2-highmem-4",
-      "image_name": "packer-{{user `h2o_version`}}-{{timestamp}}"
+      "image_name": "packer-{{user `h2o_version`}}-111822"
     }
   ],
   "provisioners": [

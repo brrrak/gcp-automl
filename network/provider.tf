@@ -7,7 +7,7 @@ terraform {
     }
   }
   backend "gcs" {
-    bucket = "steamwithdataproc-tfstate"
+    bucket = "project48a-tfstate"
     prefix = "h2o/terraform"
   }
 }

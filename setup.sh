@@ -22,3 +22,7 @@ cat gcpkey.json
 
 # Gcloud terraform credentials
 export GOOGLE_APPLICATION_CREDENTIALS="$HOME/Desktop/CMPE_48A/gcp/network/gcpkey.json"
+
+# Create the tf state backend bucket
+gsutil mb gs://project48a-tfstate
+gsutil versioning set on gs://project48a-tfstate

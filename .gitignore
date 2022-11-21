@@ -4,3 +4,5 @@ h2ocluster-sa-key.json
 workspace-sa-key.json
 h2ocluster.zip
 
+network/.terraform/plugins/registry.terraform.io/hashicorp/google/3.48.0/linux_amd64/terraform-provider-google_v3.48.0_x5
+.gitignore
