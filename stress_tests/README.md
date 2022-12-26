@@ -19,9 +19,17 @@ conda install -c h2oai h2o
 ```
 ## Test Usage
 
+`python h2o_test.py` required arguments
+
 ```shell
-python test.py --task [classification | regression] --id [task_id] --ip [server-ip:port] --max_runtime [seconds] --algorithms [algo1,algo2,algo3,...]
+$ python h2o_test.py --task [classification | regression] --id [task_id] --addr [server-ip:port] --max_runtime [seconds] --algos [algo1,algo2,algo3,...]
 ```
+
+Example:
+```shell
+$ python h2o_test.py --task classification --id 1 --addr localhost:54321 --max_runtime 10 --algos "GBM,DeepLearning"
+```
+
 
 ## Test Cases
 

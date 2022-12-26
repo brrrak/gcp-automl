@@ -1,5 +1,5 @@
 import argparse
-from stress_tests.H2O_tester import *
+from H2O_tester import *
 
 parser = argparse.ArgumentParser(
                     prog = 'H2O Cluster Tester',
@@ -14,7 +14,7 @@ parser.add_argument('--algos')
 
 args = parser.parse_args()
 
-task = args.task
+task = args.task.lower()
 id = args.id
 addr = args.addr
 runtime = args.max_runtime
@@ -26,19 +26,27 @@ if algos:
         if not algo in ALGORITHMS:
             raise ValueError("Algorithm '" + algo + "' does not exist in supported ML models.")
 
+try:
+    runtime = int(runtime)
+except:
+    raise ValueError("Please give max_runtime as an integer.")
 
 h2o.connect(
     url = "http://" + addr
 )
 
 experiments = test(h2o)
-test = {
+tasks = {
     "classification" : {
-        "1" : test.classification1,
-        "2" : test.classification2,
-        "3" : test.classification3
+        "1" : experiments.classification1,
+        "2" : experiments.classification2,
+        "3" : experiments.classification3
     },
     "regression" : {
-        "1" : test.regression1
+        "1" : experiments.regression1
     }
 }
+
+tasks[task][id](max_runtime_secs=runtime, include_algos=algos)
+print("# Saving")
+experiments.logs_save()

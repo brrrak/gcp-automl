@@ -24,7 +24,7 @@ class test:
         self.logs = []
 
     def logs_save(self):
-        with open('H2O/test/logs/log_' + str(self.project_created_time) + '.json', 'w') as f:
+        with open('logs/log_' + str(self.project_created_time) + '.json', 'w') as f:
             json.dump(self.logs, f)
 
     def classification1(self, max_runtime_secs = 0, max_models = None, include_algos = None):
