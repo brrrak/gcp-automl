@@ -96,9 +96,14 @@ resource "google_compute_firewall" "firewall_public_access" {
   allow {
     protocol = "icmp"
   }
+  # 20201 and 20202 are for opsagent
   allow {
     protocol = "tcp"
-    ports = ["22"]
+    ports = ["22", "80", "443", "20201", "20202"]
+  }
+  allow {
+    protocol = "udp"
+    ports = ["20201", "20202"]
   }
   # from the internet
   source_ranges = ["0.0.0.0/0"] 

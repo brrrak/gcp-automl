@@ -184,6 +184,22 @@ wait_for_h2o_start () {
   echo "Cluster Leader IP and PORT: ${leader_ipport}"
   echo "Cluster Leader Url: http://${leader_ipport}/flow/index.html#"
   echo -e "\n"
+  # nginx settings
+  echo "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    server_name _;
+
+    location / {
+        proxy_pass http://${leader_ipport}/;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}" | sudo tee /etc/nginx/sites-available/default
+  sudo sed -i '18 i\        client_max_body_size 1024M;' /etc/nginx/nginx.conf
+
+  sudo systemctl restart nginx
   
 }
 

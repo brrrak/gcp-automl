@@ -17,6 +17,21 @@ resource "google_project_iam_member" "workspace-vm-sa-serviceAccountUser-binding
   role = "roles/iam.serviceAccountUser"
   member = "serviceAccount:${google_service_account.workspace-vm-sa.email}"
 }
+resource "google_project_iam_member" "workspace-vm-sa-logging-binding" {
+  project = var.gcp_project_id
+  role = "roles/logging.logWriter"
+  member = "serviceAccount:${google_service_account.workspace-vm-sa.email}"
+}
+resource "google_project_iam_member" "workspace-vm-sa-monitoring-binding" {
+  project = var.gcp_project_id
+  role = "roles/monitoring.metricWriter"
+  member = "serviceAccount:${google_service_account.workspace-vm-sa.email}"
+}
+resource "google_project_iam_member" "workspace-vm-sa-osconfig-binding" {
+  project = var.gcp_project_id
+  role = "roles/osconfig.guestPolicyAdmin"
+  member = "serviceAccount:${google_service_account.workspace-vm-sa.email}"
+}
 
 
 
@@ -53,5 +68,20 @@ resource "google_project_iam_member" "h2ocluster-vm-storage-objectViewer-binding
 resource "google_project_iam_member" "h2ocluster-vm-bigquery-jobuser-binding" {
   project = var.gcp_project_id
   role = "roles/bigquery.jobUser"
+  member = "serviceAccount:${google_service_account.h2ocluster-vm-sa.email}"
+}
+resource "google_project_iam_member" "h2ocluster-vm-sa-logging-binding" {
+  project = var.gcp_project_id
+  role = "roles/logging.logWriter"
+  member = "serviceAccount:${google_service_account.h2ocluster-vm-sa.email}"
+}
+resource "google_project_iam_member" "h2ocluster-vm-sa-monitoring-binding" {
+  project = var.gcp_project_id
+  role = "roles/monitoring.metricWriter"
+  member = "serviceAccount:${google_service_account.h2ocluster-vm-sa.email}"
+}
+resource "google_project_iam_member" "h2ocluster-vm-sa-osconfig-binding" {
+  project = var.gcp_project_id
+  role = "roles/osconfig.guestPolicyAdmin"
   member = "serviceAccount:${google_service_account.h2ocluster-vm-sa.email}"
 }

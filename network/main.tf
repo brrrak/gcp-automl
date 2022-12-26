@@ -56,3 +56,26 @@ module "workspace-instance" {
   instance_service_account_scopes = ["cloud-platform"] 
 }
 
+#
+# Create the OpsAgent policy
+#
+module "agent_policy" {
+  source     = "./modules/agent-policy"
+
+  project_id = var.gcp_project_id
+  policy_id  = "ops-agents-cluster-policy"
+  agent_rules = [
+    {
+      type               = "ops-agent"
+      version            = "current-major"
+      package_state      = "installed"
+      enable_autoupgrade = true
+    },
+  ]
+  os_types = [
+    {
+      short_name = "ubuntu"
+      version    = "20.04"
+    },
+  ]
+}

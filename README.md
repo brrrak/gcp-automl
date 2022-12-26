@@ -1,6 +1,7 @@
 H2O Open Source clusters on GCP
 ===============================
 Terraform deployment template to spin up a 3 node H2O Open Source cluster in GCP. 
+This template is based on [this tutorial](https://github.com/h2oai/h2o-3/tree/master/templates/gcp)
 
 This template is a work in progress and is provided without any warranty or support. You are free to refer/modify it as you need.
 
@@ -21,7 +22,10 @@ These activities are performed by someone who have Cloud Admin privileges. In th
     * Compute Engine API
     * Identity and Access Management (IAM) API
     * Cloud Resorce Manager API
-- **!! NOTE !!** - For this work I reused an existing project with the name `project48a`. The name does not directly relate to this work, but ignore that for now.
+    * Cloud Monitoring API
+    * Cloud Logging API
+    * OS Config API
+- **!! NOTE !!** - For this work, the used project name is `project48a`.
 
 #### Setup gcloud cli
 - Preferably setup the `gcloud` sdk on a linux based machine, ideally used by the Cloud system admin team to manage the cloud infrastructure.
@@ -89,7 +93,7 @@ These activities are performed by someone who have Cloud Admin privileges. In th
 - Create a [Service Account for this Project](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating)
     ```bash
     gcloud iam service-accounts create project48a-sa \
-        --description="SteamWithDataproc Service Account" \
+        --description="Project48a Service Account" \
         --display-name="project48a-sa"
         
     gcloud iam service-accounts list 

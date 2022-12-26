@@ -3,13 +3,13 @@ global_prefix = "h2o"
 
 gcp_project_id = "project48a"
 gcp_project_region = "europe-west1"
-gcp_project_zone = "europe-west1-b"
+gcp_project_zone = "europe-west1-c"
 
 vpc_private_subnet_id = " https://www.googleapis.com/compute/v1/projects/project48a/regions/europe-west1/subnetworks/h2o-vpc-private-subnet"
 
 h2o_cluster_instance_count = "3"
 h2o_cluster_instance_machine_type = "e2-highmem-4"
-h2o_cluster_instance_boot_disk_image = "packer-h2o-3-38-0-2-111822"
+h2o_cluster_instance_boot_disk_image = "packer-h2o-3-38-0-2-112122"
 h2o_cluster_instance_boot_disk_type = "pd-ssd"
 h2o_cluster_instance_boot_disk_size  = 30
 

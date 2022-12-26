@@ -6,10 +6,11 @@ INSTANCE=$(curl --silent -H "Metadata-Flavor: Google" http://metadata.google.int
 
 # Fix for know issue with GCP startup scripts failure
 # https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
-sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+# sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+sudo apt-get -q -y update
 
 # install dependencies
-yum install -y wget unzip python3 tree
+sudo apt install -y wget unzip python3 tree nginx
 
 # Install terraform
 mkdir -p /tmp/terraform
@@ -30,7 +31,7 @@ popd
 # Get h2ocluster terraform code and move it to 
 mkdir -p /tmp/temp
 pushd /tmp/temp
-curl -L --silent "https://drive.google.com/uc?export=download&id=1vW7cCfYnWbsDc13ZZnrLhoucSkaYcE1F" -o h2ocluster.zip
+curl -L --silent "https://drive.google.com/uc?export=download&id=17oPDP4dQSZHvfBqxSMrO3SwZvLsg-lnm" -o h2ocluster.zip
 unzip h2ocluster.zip
 mv h2ocluster /opt
 mv /opt/h2ocluster/terraform/h2ocluster.sh /opt/h2ocluster/terraform/h2ocluster
@@ -45,6 +46,10 @@ chmod +x /usr/bin/jq
 
 # shellcheck disable=SC2016
 echo 'PATH="/opt/h2ocluster/terraform:$PATH"' > /etc/profile.d/h2ocluster.sh
+
+# # Install OpsAgent
+# curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+# sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
 # Signal Startup script completion
 # gcloud compute instances add-metadata ${INSTANCE} --metadata startup-complete=TRUE --zone=${ZONE}

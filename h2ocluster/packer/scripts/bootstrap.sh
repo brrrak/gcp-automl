@@ -3,11 +3,12 @@ set -o xtrace
 
 # fix issues with yum installation
 # https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
-sudo sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+# sudo sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+sudo apt-get -q -y update
 
 # install dependencies
-unzip -v || { echo "Installing Unzip"; sudo yum install -y unzip; }
-java -version || { echo "Installing Java JDK"; sudo yum install -y java-1.8.0-openjdk-devel; }
+unzip -v || { echo "Installing Unzip"; sudo apt install -y unzip; }
+java -version || { echo "Installing Java JDK"; sudo apt install -y openjdk-8-jre; }
 
 H2O_URL="${1}"
 echo "${H2O_URL}" > /tmp/h2o_url
