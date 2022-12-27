@@ -22,7 +22,12 @@ conda install -c h2oai h2o
 `python h2o_test.py` required arguments
 
 ```shell
-$ python h2o_test.py --task [classification | regression] --id [task_id] --addr [server-ip:port] --max_runtime [seconds] --algos [algo1,algo2,algo3,...]
+$ python h2o_test.py \
+        --task [classification | regression] \
+        --id [task_id] \
+        --addr [server-ip:port] \
+        --max_runtime [seconds] \
+        --algos ["algo1,algo2,algo3,..."]
 ```
 
 Example:
