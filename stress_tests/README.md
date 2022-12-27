@@ -34,7 +34,15 @@ Example:
 ```shell
 $ python h2o_test.py --task classification --id 1 --addr localhost:54321 --max_runtime 10 --algos "GBM,DeepLearning"
 ```
+## H2O
 
+H2O AutoML avaliable algorithms:
+- DRF
+- GLM
+- XGBoost
+- GBM
+- DeepLearning
+- StackedEnsemble
 
 ## Test Cases
 
