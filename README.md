@@ -206,7 +206,7 @@ Step 2: Creating H2O clusters
     ```
 - Using this info, create an ssh local port forward to the H2O cluster created in the private subnet via the Workspace machine (which is like a bastion). You can select any local port to forward. I used `8888` in this example.
     ```bash
-    ssh -i ~/.ssh/google_compute_engine -L 8888:10.100.1.2:54321  acaraliburak_gmail_com@35.195.53.255
+    ssh -i ~/.ssh/google_compute_engine -L 8888:10.100.1.2:54321  hemen_kapadia_h2o_ai@35.247.123.203
     ```
 - Open a browser on your laptop and go to URL `http://localhost:8888`. You will see the H2O flow UI.
 - If you are running Python or R code to connect to the H2O cluster then the cluster address will be different based on where you code is executing.
